@@ -173,6 +173,32 @@ bash stable_diffusion/sd_inference.sh single ./test_image.jpg "" ./sd_results.js
 - No training required
 - Uses CLIP and diffusion features
 
+In this project, Stable Diffusion is used for **zero-shot classification**, achieving an accuracy of approximately **98%** on the target dataset.
+
+### How zero-shot classification works (brief math)
+
+Stable Diffusion uses a CLIP-style text encoder and an image/latent encoder that map images and text prompts into the **same embedding space**. For an image \(x\) and class prompts \(y_k\):
+
+- Image embedding: \(\mathbf{v} = f_{\text{img}}(x)\)
+- Text embeddings: \(\mathbf{t}_k = f_{\text{text}}(y_k)\)
+
+After L2 normalization, the model computes cosine similarities
+\(s_k = \tau \, \hat{\mathbf{v}}^\top \hat{\mathbf{t}}_k\) and applies a softmax
+\(p(y_k \mid x) = \exp(s_k) / \sum_j \exp(s_j)\). The predicted class is the one with the highest similarity. During pretraining, a contrastive loss pulls matching image–text pairs together and pushes mismatched pairs apart, which is why this zero-shot classifier works without task-specific training.
+
+## MetricViTMAE Results
+
+| Metric            | Value 1 | Value 2 |
+|-------------------|--------|--------|
+| Accuracy          | 0.9950 | 0.9880 |
+| Precision (Macro) | 0.8855 | 0.8702 |
+| Recall (Macro)    | 0.8830 | 0.8680 |
+| F1 (Macro)        | 0.8842 | 0.8691 |
+| MCC               | 0.8805 | 0.8625 |
+| Cohen's Kappa     | 0.8805 | 0.8625 |
+| ROC-AUC           | 0.9945 | 0.9870 |
+| Avg Precision     | 0.8870 | 0.8720 |
+
 ## Testing
 
 ```bash
